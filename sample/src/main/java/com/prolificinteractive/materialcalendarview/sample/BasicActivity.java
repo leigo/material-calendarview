@@ -10,6 +10,9 @@ import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
 import com.prolificinteractive.materialcalendarview.OnMonthChangedListener;
+import com.prolificinteractive.materialcalendarview.sample.decorators.HighlightWeekendsDecorator;
+import com.prolificinteractive.materialcalendarview.sample.decorators.MySelectorDecorator;
+import com.prolificinteractive.materialcalendarview.sample.decorators.OneDayDecorator;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -21,6 +24,8 @@ import butterknife.ButterKnife;
  * Shows off the most basic usage
  */
 public class BasicActivity extends AppCompatActivity implements OnDateSelectedListener, OnMonthChangedListener {
+
+    private OneDayDecorator oneDayDecorator;
 
     private static final DateFormat FORMATTER = SimpleDateFormat.getDateInstance();
 
@@ -36,16 +41,23 @@ public class BasicActivity extends AppCompatActivity implements OnDateSelectedLi
         setContentView(R.layout.activity_basic);
         ButterKnife.bind(this);
 
+        oneDayDecorator = new OneDayDecorator(this);
+
         widget.setOnDateChangedListener(this);
         widget.setOnMonthChangedListener(this);
 
         //Setup initial text
         textView.setText(getSelectedDatesString());
+
+        widget.addDecorators(oneDayDecorator);
     }
 
     @Override
     public void onDateSelected(@NonNull MaterialCalendarView widget, @Nullable CalendarDay date, boolean selected) {
         textView.setText(getSelectedDatesString());
+        //If you change a decorate, you need to invalidate decorators
+        oneDayDecorator.setDate(date.getDate());
+        widget.invalidateDecorators();
     }
 
     @Override

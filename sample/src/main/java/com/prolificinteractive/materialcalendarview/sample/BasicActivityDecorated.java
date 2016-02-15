@@ -27,7 +27,7 @@ import butterknife.ButterKnife;
  */
 public class BasicActivityDecorated extends AppCompatActivity implements OnDateSelectedListener {
 
-    private final OneDayDecorator oneDayDecorator = new OneDayDecorator();
+    private OneDayDecorator oneDayDecorator;
 
     @Bind(R.id.calendarView)
     MaterialCalendarView widget;
@@ -49,6 +49,8 @@ public class BasicActivityDecorated extends AppCompatActivity implements OnDateS
 
         calendar.set(calendar.get(Calendar.YEAR), Calendar.DECEMBER, 31);
         widget.setMaximumDate(calendar.getTime());
+
+        oneDayDecorator = new OneDayDecorator(getApplicationContext());
 
         widget.addDecorators(
                 new MySelectorDecorator(this),

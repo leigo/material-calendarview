@@ -63,7 +63,6 @@ class DayView extends CheckedTextView {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             setTextAlignment(TEXT_ALIGNMENT_CENTER);
         }
-
         setDay(day);
     }
 
@@ -164,21 +163,38 @@ class DayView extends CheckedTextView {
     }
 
     private final Rect tempRect = new Rect();
+    private final Rect circleRect = new Rect();
 
     @Override
     protected void onDraw(@NonNull Canvas canvas) {
         if (customBackground != null) {
             canvas.getClipBounds(tempRect);
+
+            int left = tempRect.width() / 2 - tempRect.height() / 2;
+            int right = tempRect.width() / 2 + tempRect.height() / 2;
+            tempRect.set(left, tempRect.top, right, tempRect.bottom);
+
             customBackground.setBounds(tempRect);
             customBackground.setState(getDrawableState());
             customBackground.draw(canvas);
+        }
+        if (selectionDrawable != null) {
+            canvas.getClipBounds(circleRect);
+
+            int left = circleRect.width() / 2 - circleRect.height() / 2;
+            int right = circleRect.width() / 2 + circleRect.height() / 2;
+            circleRect.set(left, circleRect.top, right, circleRect.bottom);
+
+            selectionDrawable.setBounds(circleRect);
+            selectionDrawable.setState(getDrawableState());
+            selectionDrawable.draw(canvas);
         }
         super.onDraw(canvas);
     }
 
     private void regenerateBackground() {
         if (selectionDrawable != null) {
-            setBackgroundDrawable(selectionDrawable);
+//            setBackgroundDrawable(selectionDrawable);
         } else {
             setBackgroundDrawable(generateBackground(selectionColor, fadeTime));
         }

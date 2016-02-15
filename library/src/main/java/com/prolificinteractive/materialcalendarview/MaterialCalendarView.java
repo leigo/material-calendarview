@@ -14,6 +14,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.SparseArray;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -212,6 +213,8 @@ public class MaterialCalendarView extends ViewGroup {
     @SelectionMode
     private int selectionMode = SELECTION_MODE_SINGLE;
 
+    private float minimizeHorizontalTileHeight = 1;
+
     public MaterialCalendarView(Context context) {
         this(context, null);
     }
@@ -261,6 +264,12 @@ public class MaterialCalendarView extends ViewGroup {
             int tileSize = a.getDimensionPixelSize(R.styleable.MaterialCalendarView_mcv_tileSize, -1);
             if (tileSize > 0) {
                 setTileSize(tileSize);
+            }
+
+            float minimizeHeight = a.getFloat(R.styleable.MaterialCalendarView_mcv_minimizeHorizontalTileHeight, 1);
+            Log.d("aaa", minimizeHeight + "");
+            if (minimizeHeight > 0) {
+                setMinimizeHorizontalTileHeight(minimizeHeight);
             }
 
             setArrowColor(a.getColor(
@@ -935,6 +944,14 @@ public class MaterialCalendarView extends ViewGroup {
         return topbar.getVisibility() == View.VISIBLE;
     }
 
+    private void setMinimizeHorizontalTileHeight(float minimizeHorizontalTileHeight) {
+        this.minimizeHorizontalTileHeight = minimizeHorizontalTileHeight;
+    }
+
+    public float getMinimizeHorizontalTileHeight() {
+        return minimizeHorizontalTileHeight;
+    }
+
     @Override
     protected Parcelable onSaveInstanceState() {
         SavedState ss = new SavedState(super.onSaveInstanceState());
@@ -1336,7 +1353,7 @@ public class MaterialCalendarView extends ViewGroup {
 
         //Calculate our size based off our measured tile size
         int measuredWidth = measureTileSize * DEFAULT_DAYS_IN_WEEK;
-        int measuredHeight = measureTileSize * viewTileHeight;
+        int measuredHeight = (int) ((measureTileSize / minimizeHorizontalTileHeight ) * viewTileHeight);
 
         //Put padding back in from when we took it away
         measuredWidth += getPaddingLeft() + getPaddingRight();
@@ -1361,10 +1378,12 @@ public class MaterialCalendarView extends ViewGroup {
                     MeasureSpec.EXACTLY
             );
 
-            int childHeightMeasureSpec = MeasureSpec.makeMeasureSpec(
-                    p.height * measureTileSize,
-                    MeasureSpec.EXACTLY
-            );
+            int childHeightMeasureSpec;
+            if (minimizeHorizontalTileHeight > 0) {
+                childHeightMeasureSpec = MeasureSpec.makeMeasureSpec((int) (p.height * (measureTileSize / minimizeHorizontalTileHeight)), MeasureSpec.EXACTLY);
+            } else {
+                childHeightMeasureSpec = MeasureSpec.makeMeasureSpec(p.height * (measureTileSize), MeasureSpec.EXACTLY);
+            }
 
             child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
         }
